@@ -1,0 +1,19 @@
+{
+    "version": "0.0.0",
+    "contributors": [
+        "haxeui",
+        "ianharrigan"
+    ],
+    "license": "MIT",
+    "tags": [
+    ],
+    "releasenote": "0.0.0",
+    "dependencies": {
+        "libsqlite3": "",
+        "promises": ""
+    },
+    "classPath": "src",
+    "name": "sqlite3",
+    "description": "",
+    "url": ""
+}
