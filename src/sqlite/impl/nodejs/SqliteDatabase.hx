@@ -37,10 +37,6 @@ class SqliteDatabase extends DatabaseBase {
         return new Promise((resolve, reject) -> {
             _nativeDB.get(sql, param, (error, row) -> {
                 if (error != null) {
-                    /*
-                    trace(">>>>>>>>>>>>>>> HERE", Reflect.field(error, "errno"));
-                    trace(">>>>>>>>>>>>>>> HERE", Reflect.field(error, "code"));
-                    */
                     reject(new SqliteError(error.name, error.message));
                     return;
                 }
