@@ -18,6 +18,10 @@ class SqliteDatabase extends DatabaseBase {
     public override function exec(sql:String):Promise<SqliteResult<Bool>> {
         return new Promise((resolve, reject) -> {
             try {
+                if (_nativeDB == null) {
+                    reject(new SqliteError("Error", "Database not open"));
+                    return;
+                }
                 var stmt = prepareStatement(sql);
                 stmt.executeStatement();
                 resolve(new SqliteResult(this, true));
@@ -30,6 +34,10 @@ class SqliteDatabase extends DatabaseBase {
     public override function get(sql:String, ?param:Dynamic):Promise<SqliteResult<Dynamic>> {
         return new Promise((resolve, reject) -> {
             try {
+                if (_nativeDB == null) {
+                    reject(new SqliteError("Error", "Database not open"));
+                    return;
+                }
                 var stmt = prepareStatement(sql, param);
                 var rs = stmt.executeQuery();
                 if (!rs.hasNext()) {
@@ -47,6 +55,10 @@ class SqliteDatabase extends DatabaseBase {
     public override function all(sql:String, ?param:Dynamic):Promise<SqliteResult<Array<Dynamic>>> {
         return new Promise((resolve, reject) -> {
             try {
+                if (_nativeDB == null) {
+                    reject(new SqliteError("Error", "Database not open"));
+                    return;
+                }
                 var stmt = prepareStatement(sql, param);
                 var rs = stmt.executeQuery();
                 var records:Array<Dynamic> = [];
