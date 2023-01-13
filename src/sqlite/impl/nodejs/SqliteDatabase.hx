@@ -2,10 +2,12 @@ package sqlite.impl.nodejs;
 
 import sqlite.externs.nodejs.Sqlite3;
 import promises.Promise;
-
+import logging.Logger;
 import sqlite.externs.nodejs.Database as NativeDatabase;
 
 class SqliteDatabase extends DatabaseBase {
+    private var log:Logger = new Logger(SqliteDatabase);
+
     private var _nativeDB:NativeDatabase = null;
 
     public override function open():Promise<SqliteResult<Bool>> {
@@ -23,6 +25,8 @@ class SqliteDatabase extends DatabaseBase {
 
     public override function exec(sql:String):Promise<SqliteResult<Bool>> {
         return new Promise((resolve, reject) -> {
+            log.debug(sql);
+
             _nativeDB.exec(sql, error -> {
                 if (error != null) {
                     reject(new SqliteError(error.name, error.message));
@@ -35,6 +39,8 @@ class SqliteDatabase extends DatabaseBase {
 
     public override function get(sql:String, ?param:Dynamic):Promise<SqliteResult<Dynamic>> {
         return new Promise((resolve, reject) -> {
+            log.debug(sql, 'params=${param}');
+
             _nativeDB.get(sql, param, (error, row) -> {
                 if (error != null) {
                     reject(new SqliteError(error.name, error.message));
@@ -47,6 +53,8 @@ class SqliteDatabase extends DatabaseBase {
 
     public override function all(sql:String, ?param:Dynamic):Promise<SqliteResult<Array<Dynamic>>> {
         return new Promise((resolve, reject) -> {
+            log.debug(sql, 'params=${param}');
+            
             _nativeDB.all(sql, param, (error, rows) -> {
                 if (error != null) {
                     reject(new SqliteError(error.name, error.message));

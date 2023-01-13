@@ -10,7 +10,8 @@
     "releasenote": "0.0.0",
     "dependencies": {
         "libsqlite3": "",
-        "promises": ""
+        "promises": "",
+        "logging": ""
     },
     "classPath": "src",
     "name": "sqlite3",
