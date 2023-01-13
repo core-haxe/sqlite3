@@ -5,7 +5,7 @@ sqlite3 for all relevant haxe targets
 
 ```haxe
 var db = new Database("somedb.db");
-db.exec("CREATE TABLE Persons (PersonID int, LastName varchar(50), FirstName varchar(50);").then(result -> {
+db.exec("CREATE TABLE Persons (PersonID int, LastName varchar(50), FirstName varchar(50));").then(result -> {
     return db.exec("INSERT INTO Persons (PersonID, LastName, FirstName) VALUES (1, 'Ian', 'Harrigan');");
 }).then(result -> {
     return db.all("SELECT * FROM Persons;");
