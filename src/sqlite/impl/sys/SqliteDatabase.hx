@@ -76,11 +76,11 @@ class SqliteDatabase extends DatabaseBase {
                 case TClass(String):
                     _connection.quote(p);
                 case TBool:
-                    p == true ? 1 : 0;
+                    p == true ? "1" : "0";
                 case TFloat:
-                    p;
+                    Std.string(p);
                 case TInt:
-                    p;
+                    Std.string(p);
                 case _:
                     trace("UKNONWN:", Type.typeof(p));
                     p;
