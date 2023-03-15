@@ -29,6 +29,12 @@ class DatabaseBase {
         });
     }
 
+    public function run(sql:String, ?param:Dynamic):Promise<SqliteResult<Dynamic>> {
+        return new Promise((resolve, reject) -> {
+            reject(new SqliteError("not implemented", 'function "${Type.getClassName(Type.getClass(this))}::run" not implemented'));
+        });
+    }
+
     public function all(sql:String, ?param:Dynamic):Promise<SqliteResult<Array<Dynamic>>> {
         return new Promise((resolve, reject) -> {
             reject(new SqliteError("not implemented", 'function "${Type.getClassName(Type.getClass(this))}::all" not implemented'));

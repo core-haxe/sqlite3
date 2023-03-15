@@ -1,9 +1,12 @@
 package sqlite.impl.nodejs;
 
-import sqlite.externs.nodejs.Sqlite3;
-import promises.Promise;
+import js.Node;
+import js.Syntax;
+import js.node.console.Console;
 import logging.Logger;
+import promises.Promise;
 import sqlite.externs.nodejs.Database as NativeDatabase;
+import sqlite.externs.nodejs.Sqlite3;
 
 class SqliteDatabase extends DatabaseBase {
     private var log:Logger = new Logger(SqliteDatabase);
@@ -47,6 +50,21 @@ class SqliteDatabase extends DatabaseBase {
                     return;
                 }
                 resolve(new SqliteResult(this, row));
+            });
+        });
+    }
+
+    public override function run(sql:String, ?param:Dynamic):Promise<SqliteResult<Dynamic>> {
+        return new Promise((resolve, reject) -> {
+            log.debug(sql, 'params=${param}');
+
+            _nativeDB.run(sql, param, (error) -> {
+                var insertData = Syntax.code("this");
+                if (error != null) {
+                    reject(new SqliteError(error.name, error.message));
+                    return;
+                }
+                resolve(new SqliteResult(this, insertData));
             });
         });
     }
