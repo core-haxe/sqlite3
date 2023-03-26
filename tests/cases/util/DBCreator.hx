@@ -12,7 +12,7 @@ class DBCreator {
             var db = new Database("persons.db");
             db.open().then(_ -> {
                 return db.exec("CREATE TABLE Person (
-                    personId int,
+                    personId INTEGER PRIMARY KEY AUTOINCREMENT,
                     lastName varchar(50),
                     firstName varchar(50),
                     iconId int
@@ -41,6 +41,8 @@ class DBCreator {
                 } else {
                     resolve(true);
                 }
+            }, error -> {
+                trace("error", error);
             });
         });
     }

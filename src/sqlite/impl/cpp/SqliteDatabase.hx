@@ -81,7 +81,14 @@ class SqliteDatabase extends DatabaseBase {
                 }
                 var stmt = prepareStatement(sql, param);
                 stmt.executeStatement();
-                resolve(new SqliteResult(this, null));
+                if (sql.indexOf("INSERT ") != -1) {
+                    var lastInsertedId = _nativeDB.lastInsertRowId();
+                    resolve(new SqliteResult(this, {
+                        lastID: lastInsertedId
+                    }));
+                } else {
+                    resolve(new SqliteResult(this, null));
+                }
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }

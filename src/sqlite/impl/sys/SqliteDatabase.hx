@@ -62,12 +62,15 @@ class SqliteDatabase extends DatabaseBase {
         return new Promise((resolve, reject) -> {
             try {
                 sql = prepareSQL(sql, param);
-                var rs = _connection.request(sql);
-                if (rs.length == 0) {
+                _connection.request(sql);
+                if (sql.indexOf("INSERT ") != -1) {
+                    var lastInsertedId = _connection.lastInsertId();
+                    resolve(new SqliteResult(this, {
+                        lastID: lastInsertedId
+                    }));
+                } else {
                     resolve(new SqliteResult(this, null));
-                    return;
                 }
-                resolve(new SqliteResult(this, rs.next()));
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }
