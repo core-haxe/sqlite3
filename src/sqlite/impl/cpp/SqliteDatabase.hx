@@ -130,4 +130,11 @@ class SqliteDatabase extends DatabaseBase {
 
         return stmt;
     }
+
+    public override function close():Promise<SqliteResult<Bool>> {
+        return new Promise((resolve, reject) -> {
+            _nativeDB.close();
+            resolve(new SqliteResult(this, true));
+        });
+    }
 }

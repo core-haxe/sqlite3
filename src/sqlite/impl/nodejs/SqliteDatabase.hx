@@ -82,4 +82,15 @@ class SqliteDatabase extends DatabaseBase {
             });
         });
     }
+
+    private var _closed:Bool = false;
+    public override function close():Promise<SqliteResult<Bool>> {
+        return new Promise((resolve, reject) -> {
+            if (!_closed) {
+                _nativeDB.close();
+                _closed = true;
+            }
+            resolve(new SqliteResult(this, true));
+        });
+    }
 }

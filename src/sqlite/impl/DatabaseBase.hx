@@ -40,4 +40,10 @@ class DatabaseBase {
             reject(new SqliteError("not implemented", 'function "${Type.getClassName(Type.getClass(this))}::all" not implemented'));
         });
     }
+
+    public function close():Promise<SqliteResult<Bool>> {
+        return new Promise((resolve, reject) -> {
+            reject(new SqliteError("not implemented", 'function "${Type.getClassName(Type.getClass(this))}::close" not implemented'));
+        });
+    }
 }
