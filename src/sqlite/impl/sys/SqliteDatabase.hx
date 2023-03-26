@@ -100,6 +100,8 @@ class SqliteDatabase extends DatabaseBase {
                     Std.string(p);
                 case TInt:
                     Std.string(p);
+                case TNull:
+                    "NULL";
                 case _:
                     trace("UKNONWN:", Type.typeof(p));
                     p;
