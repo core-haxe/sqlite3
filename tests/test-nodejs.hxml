@@ -1,13 +1,4 @@
--cmd nodejs-windows-install.bat
---next
-
---class-path .
---main TestAll
-
--lib utest
--lib sqlite3
--lib hxnodejs
--D no-deprecation-warnings
+common-nodejs.hxml
 
 --js build/nodejs/test-all.js
 --cmd node build/nodejs/test-all.js
