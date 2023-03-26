@@ -1,15 +1,39 @@
 package cases.util;
 
+import sys.io.FileSeek;
+import sys.io.File;
+import sys.FileSystem;
+import sqlite.SqliteError;
 import promises.PromiseUtils;
 import sqlite.Database;
-import sys.io.File;
 import promises.Promise;
 
 class DBCreator {
+    private static var counter:Int = 0;
+    private static var db:Database;
+    public static var filename:String;
+
     public static function create(createDummyData:Bool = true):Promise<Bool> {
+        // While .close() guarantees the database itself is "closed" for read/write purposes on callback, the OS cannot be guaranteed to immediately release the file lock.
+        var mangleNames = true;
+
+        if (db != null) {
+            db.close();
+        }
+
+        if (mangleNames == true) {
+            filename = "persons" + counter + ".db";
+            counter++;
+        } else {
+            filename = "persons.db";
+        }
+
         return new Promise((resolve, reject) -> {
-            File.saveContent("persons.db", "");
-            var db = new Database("persons.db");
+            if (FileSystem.exists(filename)) {
+                FileSystem.deleteFile(filename);
+            }
+            File.saveContent(filename, "");
+            db = new Database(filename);
             db.open().then(_ -> {
                 return db.exec("CREATE TABLE Person (
                     personId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,6 +58,7 @@ class DBCreator {
                     Organization_organizationId int
                 );");
             }).then(_ -> {
+                db.close();
                 if (createDummyData) {
                     addDummyData().then(_ -> {
                         resolve(true);
@@ -42,14 +67,18 @@ class DBCreator {
                     resolve(true);
                 }
             }, error -> {
-                trace("error", error);
+                if (error is SqliteError) {
+                    var sqliteError = cast(error, SqliteError);
+                    trace("error", sqliteError.name, sqliteError.message);
+                } else {
+                    trace("error", error);
+                }
             });
         });
     }
 
     public static function addDummyData():Promise<Bool> {
         return new Promise((resolve, reject) -> {
-            var db = new Database("persons.db");
             db.open().then(_ -> {
                 var inserts = [];
                 inserts.push(db.exec.bind("INSERT INTO Icon (iconId, path) VALUES (1, '/somepath/icon1.png');"));
@@ -74,12 +103,14 @@ class DBCreator {
                 inserts.push(db.exec.bind("INSERT INTO Person_Organization (Person_personId, Organization_organizationId) VALUES (4, 3);"));
                 return PromiseUtils.runAll(inserts);
             }).then(_ -> {
+                db.close();
                 resolve(true);
             });
         });
     }
 
     public static function delete() {
-        //FileSystem.deleteFile("persons.db");
+        db.close();
+        //FileSystem.deleteFile(filename);
     }
 }

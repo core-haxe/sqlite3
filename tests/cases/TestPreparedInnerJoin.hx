@@ -7,7 +7,7 @@ import utest.Async;
 import utest.Test;
 
 class TestPreparedInnerJoin extends Test {
-    function setupClass(async:Async) {
+    function setup(async:Async) {
         logging.LogManager.instance.addAdaptor(new logging.adaptors.ConsoleLogAdaptor({
             levels: [logging.LogLevel.Info, logging.LogLevel.Error]
         }));
@@ -16,14 +16,14 @@ class TestPreparedInnerJoin extends Test {
         });
     }
 
-    function teardownClass(async:Async) {
+    function teardown(async:Async) {
         logging.LogManager.instance.clearAdaptors();
         DBCreator.delete();
         async.done();
     }
 
     function testBasicInnerJoinWhere(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             // note: sys.db throws exception when result has the same fields (fun!), so we have explicitly list them
             return db.all("SELECT Person.personId, Person.firstName, Person.lastName, Person.iconId, Icon.path FROM Person
@@ -38,12 +38,15 @@ class TestPreparedInnerJoin extends Test {
             Assert.equals(result.data[0].iconId, 1);
             Assert.equals(result.data[0].path, "/somepath/icon1.png");
     
+            db.close();
             async.done();
+        }, error -> {
+            trace("error", error);
         });
     }
 
     function testBasicInnerJoinWhereOr(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             // note: sys.db throws exception when result has the same fields (fun!), so we have explicitly list them
             return db.all("SELECT Person.personId, Person.firstName, Person.lastName, Person.iconId, Icon.path FROM Person
@@ -64,12 +67,15 @@ class TestPreparedInnerJoin extends Test {
             Assert.equals(result.data[1].iconId, 1);
             Assert.equals(result.data[1].path, "/somepath/icon1.png");
             
+            db.close();
             async.done();
+        }, error -> {
+            trace("error", error);
         });
     }
 
     function testBasicInnerJoinWhereAnd(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             // note: sys.db throws exception when result has the same fields (fun!), so we have explicitly list them
             return db.all("SELECT Person.personId, Person.firstName, Person.lastName, Person.iconId, Icon.path FROM Person
@@ -84,7 +90,10 @@ class TestPreparedInnerJoin extends Test {
             Assert.equals(result.data[0].iconId, 1);
             Assert.equals(result.data[0].path, "/somepath/icon1.png");
             
+            db.close();
             async.done();
+        }, error -> {
+            trace("error", error);
         });
     }
 }

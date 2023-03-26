@@ -7,7 +7,7 @@ import utest.Async;
 import utest.Test;
 
 class TestQuery extends Test {
-    function setupClass(async:Async) {
+    function setup(async:Async) {
         logging.LogManager.instance.addAdaptor(new logging.adaptors.ConsoleLogAdaptor({
             levels: [logging.LogLevel.Info, logging.LogLevel.Error]
         }));
@@ -16,14 +16,14 @@ class TestQuery extends Test {
         });
     }
 
-    function teardownClass(async:Async) {
+    function teardown(async:Async) {
         logging.LogManager.instance.clearAdaptors();
         DBCreator.delete();
         async.done();
     }
     
     function testBasicSelect(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             return db.all("SELECT * FROM Person");
         }).then(result -> {
@@ -39,12 +39,15 @@ class TestQuery extends Test {
             Assert.equals(result.data[2].lastName, "Mallot");
             Assert.equals(result.data[2].iconId, 2);
     
+            db.close();
             async.done();
+        }, error -> {
+            trace("error", error);
         });
     }
 
     function testBasicSelectOne(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             return db.get("SELECT * FROM Person");
         }).then(result -> {
@@ -53,12 +56,15 @@ class TestQuery extends Test {
             Assert.equals(result.data.lastName, "Harrigan");
             Assert.equals(result.data.iconId, 1);
     
+            db.close();
             async.done();
+        }, error -> {
+            trace("error", error);
         });
     }
 
     function testBasicSelectWhere(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             return db.all("SELECT * FROM Person WHERE personId = 1");
         }).then(result -> {
@@ -69,12 +75,15 @@ class TestQuery extends Test {
             Assert.equals(result.data[0].lastName, "Harrigan");
             Assert.equals(result.data[0].iconId, 1);
     
+            db.close();
             async.done();
+        }, error -> {
+            trace("error", error);
         });
     }
 
     function testBasicSelectWhereOr(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             return db.all("SELECT * FROM Person WHERE personId = 1 OR personId = 4");
         }).then(result -> {
@@ -90,12 +99,15 @@ class TestQuery extends Test {
             Assert.equals(result.data[1].lastName, "Parker");
             Assert.equals(result.data[1].iconId, 1);
         
+            db.close();
             async.done();
+        }, error -> {
+            trace("error", error);
         });
     }
 
     function testBasicSelectWhereAnd(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             return db.all("SELECT * FROM Person WHERE personId = 1 AND firstName = 'Ian'");
         }).then(result -> {
@@ -106,7 +118,10 @@ class TestQuery extends Test {
             Assert.equals(result.data[0].lastName, "Harrigan");
             Assert.equals(result.data[0].iconId, 1);
         
+            db.close();
             async.done();
+        }, error -> {
+            trace("error", error);
         });
     }
 }

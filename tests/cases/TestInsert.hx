@@ -7,7 +7,7 @@ import cases.util.DBCreator;
 import utest.Test;
 
 class TestInsert extends Test {
-    function setupClass(async:Async) {
+    function setup(async:Async) {
         logging.LogManager.instance.addAdaptor(new logging.adaptors.ConsoleLogAdaptor({
             levels: [logging.LogLevel.Info, logging.LogLevel.Error]
         }));
@@ -16,20 +16,21 @@ class TestInsert extends Test {
         });
     }
 
-    function teardownClass(async:Async) {
+    function teardown(async:Async) {
         logging.LogManager.instance.clearAdaptors();
         DBCreator.delete();
         async.done();
     }
     
     function testBasicInsert(async:Async) {
-        var db = new Database("persons.db");
+        var db = new Database(DBCreator.filename);
         db.open().then(_ -> {
             return db.run("INSERT INTO Person (lastName, firstName, iconId) VALUES ('new last name', 'new first name', 1)");
         }).then(result -> {
             Assert.notNull(result);
             Assert.notNull(result.data);
             Assert.equals(5, result.data.lastID);
+            db.close();
             async.done();
         }, error -> {
             trace("error", error);
