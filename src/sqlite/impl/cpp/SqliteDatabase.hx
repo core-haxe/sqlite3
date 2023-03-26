@@ -72,6 +72,22 @@ class SqliteDatabase extends DatabaseBase {
         });
     }
 
+    public override function run(sql:String, ?param:Dynamic):Promise<SqliteResult<Dynamic>> {
+        return new Promise((resolve, reject) -> {
+            try {
+                if (_nativeDB == null) {
+                    reject(new SqliteError("Error", "Database not open"));
+                    return;
+                }
+                var stmt = prepareStatement(sql, param);
+                stmt.executeStatement();
+                resolve(new SqliteResult(this, null));
+            } catch (e:Dynamic) {
+                reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
+            }
+        });
+    }
+
     private function prepareStatement(sql:String, param:Dynamic = null):NativeStatement {
         var stmt = _nativeDB.prepare(sql);
 
