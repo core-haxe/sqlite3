@@ -39,7 +39,8 @@ class DBCreator {
                     personId INTEGER PRIMARY KEY AUTOINCREMENT,
                     lastName varchar(50),
                     firstName varchar(50),
-                    iconId int
+                    iconId int,
+                    contractDocument blob
                 );");
             }).then(_ -> {
                 return db.exec("CREATE TABLE Icon (
@@ -85,7 +86,7 @@ class DBCreator {
                 inserts.push(db.exec.bind("INSERT INTO Icon (iconId, path) VALUES (2, '/somepath/icon2.png');"));
                 inserts.push(db.exec.bind("INSERT INTO Icon (iconId, path) VALUES (3, '/somepath/icon3.png');"));
 
-                inserts.push(db.exec.bind("INSERT INTO Person (personId, firstName, lastName, iconId) VALUES (1, 'Ian', 'Harrigan', 1);"));
+                inserts.push(db.exec.bind("INSERT INTO Person (personId, firstName, lastName, iconId, contractDocument) VALUES (1, 'Ian', 'Harrigan', 1, X'746869732069732069616e7320636f6e747261637420646f63756d656e74');"));
                 inserts.push(db.exec.bind("INSERT INTO Person (personId, firstName, lastName, iconId) VALUES (2, 'Bob', 'Barker', 3);"));
                 inserts.push(db.exec.bind("INSERT INTO Person (personId, firstName, lastName, iconId) VALUES (3, 'Tim', 'Mallot', 2);"));
                 inserts.push(db.exec.bind("INSERT INTO Person (personId, firstName, lastName, iconId) VALUES (4, 'Jim', 'Parker', 1);"));

@@ -1,5 +1,7 @@
 package sqlite.impl.nodejs;
 
+import haxe.io.Bytes;
+import js.node.Buffer;
 import js.Node;
 import js.Syntax;
 import js.node.console.Console;
@@ -49,6 +51,8 @@ class SqliteDatabase extends DatabaseBase {
                     reject(new SqliteError(error.name, error.message));
                     return;
                 }
+                // we want to convert any js.node.Buffer's into haxe.io.Bytes
+                convertNativeBuffersToBytes(row);
                 resolve(new SqliteResult(this, row));
             });
         });
@@ -78,6 +82,10 @@ class SqliteDatabase extends DatabaseBase {
                     reject(new SqliteError(error.name, error.message));
                     return;
                 }
+                for (row in rows) {
+                    // we want to convert any js.node.Buffer's into haxe.io.Bytes
+                    convertNativeBuffersToBytes(row);
+                }
                 resolve(new SqliteResult(this, rows));
             });
         });
@@ -92,5 +100,15 @@ class SqliteDatabase extends DatabaseBase {
             }
             resolve(new SqliteResult(this, true));
         });
+    }
+
+    private function convertNativeBuffersToBytes(row:Dynamic) {
+        for (column in Reflect.fields(row)) {
+            var value = Reflect.field(row, column);
+            if ((value is Buffer)) {
+                var buffer:Buffer = cast value;
+                Reflect.setField(row, column, buffer.hxToBytes());
+            }
+        }
     }
 }
