@@ -58,4 +58,27 @@ class TestBlob extends Test {
             trace("error", error);
         });
     }
+
+    function testBasicBlobInsert(async:Async) {
+        var db = new Database(DBCreator.filename);
+        db.open().then(_ -> {
+            return db.run("INSERT INTO Person (lastName, firstName, iconId, contractDocument) VALUES ('new last name', 'new first name', 1, X'746869732069732061206e657720636f6e747261637420646f63756d656e74')");
+        }).then(result -> {
+            Assert.notNull(result);
+            Assert.notNull(result.data);
+            Assert.equals(5, result.data.lastID);
+            return db.all("SELECT * FROM Person WHERE personId = 5");
+        }).then(result -> {
+            Assert.equals(result.data[0].personId, 5);
+            Assert.equals(result.data[0].firstName, "new first name");
+            Assert.equals(result.data[0].lastName, "new last name");
+            Assert.equals(result.data[0].iconId, 1);
+            Assert.isOfType(result.data[0].contractDocument, Bytes);
+            Assert.equals(Bytes.ofString("this is a new contract document").toString(), result.data[0].contractDocument.toString());
+            db.close();
+            async.done();
+        }, error -> {
+            trace("error", error);
+        });
+    }
 }

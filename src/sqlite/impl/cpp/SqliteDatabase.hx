@@ -121,6 +121,8 @@ class SqliteDatabase extends DatabaseBase {
                     stmt.bindFloat(index, p);
                 case TInt:
                     stmt.bindInt(index, p);
+                case TClass(haxe.io.Bytes):
+                    stmt.bindBytes(index, p);
                 case _:
                     trace("UKNONWN:", Type.typeof(p));
             }

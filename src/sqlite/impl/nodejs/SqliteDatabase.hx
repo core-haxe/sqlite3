@@ -46,6 +46,9 @@ class SqliteDatabase extends DatabaseBase {
         return new Promise((resolve, reject) -> {
             log.debug(sql, 'params=${param}');
 
+            if (param != null) {
+                param = convertParamsBytesToBuffers(param);
+            }
             _nativeDB.get(sql, param, (error, row) -> {
                 if (error != null) {
                     reject(new SqliteError(error.name, error.message));
@@ -62,6 +65,9 @@ class SqliteDatabase extends DatabaseBase {
         return new Promise((resolve, reject) -> {
             log.debug(sql, 'params=${param}');
 
+            if (param != null) {
+                param = convertParamsBytesToBuffers(param);
+            }
             _nativeDB.run(sql, param, (error) -> {
                 var insertData = Syntax.code("this");
                 if (error != null) {
@@ -77,6 +83,9 @@ class SqliteDatabase extends DatabaseBase {
         return new Promise((resolve, reject) -> {
             log.debug(sql, 'params=${param}');
             
+            if (param != null) {
+                param = convertParamsBytesToBuffers(param);
+            }
             _nativeDB.all(sql, param, (error, rows) -> {
                 if (error != null) {
                     reject(new SqliteError(error.name, error.message));
@@ -110,5 +119,27 @@ class SqliteDatabase extends DatabaseBase {
                 Reflect.setField(row, column, buffer.hxToBytes());
             }
         }
+    }
+
+    private function convertParamsBytesToBuffers(param:Dynamic) {
+        if (param == null) {
+            return null;
+        }
+
+        if (param is Array) {
+            var params:Array<Dynamic> = param;
+            var n = 0;
+            for (p in params) {
+                if ((p is Bytes)) {
+                    var buffer:Buffer = Buffer.hxFromBytes(cast p);
+                    params[n] = buffer;
+                }
+                n++;
+            }
+        } else if ((param is Bytes)) {
+            param = Buffer.hxFromBytes(cast param);
+        }
+
+        return param;
     }
 }

@@ -1,5 +1,6 @@
 package sqlite.impl.sys;
 
+import haxe.io.Bytes;
 import promises.Promise;
 import sys.db.Connection;
 using StringTools;
@@ -102,6 +103,9 @@ class SqliteDatabase extends DatabaseBase {
                     Std.string(p);
                 case TNull:
                     "NULL";
+                case TClass(haxe.io.Bytes):                    
+                    var bytes:Bytes = cast p;
+                    "X'" + bytes.toHex() + "'";
                 case _:
                     trace("UKNONWN:", Type.typeof(p));
                     p;
