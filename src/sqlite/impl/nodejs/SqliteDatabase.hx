@@ -1,9 +1,9 @@
 package sqlite.impl.nodejs;
 
 import haxe.io.Bytes;
+import js.node.Buffer;
 import js.Node;
 import js.Syntax;
-import js.node.Buffer;
 import js.node.console.Console;
 import logging.Logger;
 import promises.Promise;
@@ -23,7 +23,6 @@ class SqliteDatabase extends DatabaseBase {
                     reject(new SqliteError(error.name, error.message));
                     return;
                 }
-                _nativeDB.run("PRAGMA journal_mode = WAL;");
                 resolve(new SqliteResult(this, true));
             });
         });
