@@ -4,11 +4,11 @@ import promises.Promise;
 
 class DatabaseBase {
     public var filename:String;
-    public var mode:Null<Int>;
+    public var openMode:Null<SqliteOpenMode>;
 
-    public function new(filename:String, ?mode:Int) {
+    public function new(filename:String, ?openMode:SqliteOpenMode) {
         this.filename = filename;
-        this.mode = mode;
+        this.openMode = openMode;
     }
 
     public function open():Promise<SqliteResult<Bool>> {

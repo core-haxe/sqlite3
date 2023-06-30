@@ -17,8 +17,14 @@ class SqliteDatabase extends DatabaseBase {
 
     public override function open():Promise<SqliteResult<Bool>> {
         return new Promise((resolve, reject) -> {
-            // TODO: mode
-            _nativeDB = new NativeDatabase(this.filename, Sqlite3.OPEN_READWRITE, error -> {
+            var mode = Sqlite3.OPEN_READWRITE;
+            switch (this.openMode) {
+                case ReadWrite:
+                    mode = Sqlite3.OPEN_READWRITE;
+                case ReadOnly:    
+                    mode = Sqlite3.OPEN_READONLY;
+            }
+            _nativeDB = new NativeDatabase(this.filename, mode, error -> {
                 if (error != null) {
                     reject(new SqliteError(error.name, error.message));
                     return;
