@@ -3,3 +3,5 @@
 
 -lib utest
 -lib sqlite3
+
+-D no-deprecation-warnings

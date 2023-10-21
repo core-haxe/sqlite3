@@ -4,3 +4,5 @@
 -lib utest
 -lib sqlite3
 -lib hxnodejs
+
+-D no-deprecation-warnings

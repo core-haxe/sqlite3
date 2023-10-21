@@ -18,17 +18,20 @@ class SqliteDatabase extends DatabaseBase {
     public override function open():Promise<SqliteResult<Bool>> {
         return new Promise((resolve, reject) -> {
             var mode = Sqlite3.OPEN_READWRITE;
-            switch (this.openMode) {
-                case ReadWrite:
-                    mode = Sqlite3.OPEN_READWRITE;
-                case ReadOnly:    
-                    mode = Sqlite3.OPEN_READONLY;
+            if (this.openMode != null) {
+                switch (this.openMode) {
+                    case ReadWrite:
+                        mode = Sqlite3.OPEN_READWRITE;
+                    case ReadOnly:    
+                        mode = Sqlite3.OPEN_READONLY;
+                }
             }
             _nativeDB = new NativeDatabase(this.filename, mode, error -> {
                 if (error != null) {
                     reject(new SqliteError(error.name, error.message));
                     return;
                 }
+                _closed = false;
                 resolve(new SqliteResult(this, true));
             });
         });
@@ -106,14 +109,18 @@ class SqliteDatabase extends DatabaseBase {
         });
     }
 
-    private var _closed:Bool = false;
+    private var _closed:Bool = true;
     public override function close():Promise<SqliteResult<Bool>> {
         return new Promise((resolve, reject) -> {
             if (!_closed) {
                 _closed = true;
-                _nativeDB.close((error) -> {
+                if (_nativeDB != null) {
+                    _nativeDB.close((error) -> {
+                        resolve(new SqliteResult(this, true));
+                    });
+                } else {
                     resolve(new SqliteResult(this, true));
-                });
+                }
             } else {
                 resolve(new SqliteResult(this, true));
             }
