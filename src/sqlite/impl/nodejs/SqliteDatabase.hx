@@ -110,10 +110,13 @@ class SqliteDatabase extends DatabaseBase {
     public override function close():Promise<SqliteResult<Bool>> {
         return new Promise((resolve, reject) -> {
             if (!_closed) {
-                _nativeDB.close();
                 _closed = true;
+                _nativeDB.close((error) -> {
+                    resolve(new SqliteResult(this, true));
+                });
+            } else {
+                resolve(new SqliteResult(this, true));
             }
-            resolve(new SqliteResult(this, true));
         });
     }
 

@@ -43,6 +43,6 @@ extern class Database {
 	**/
 	public function prepare(sql:String, ?param:Dynamic, ?callback:Error->Void ):Statement;
 
-	public function close():Void;
+	public function close(?callback:Error->Void):Void;
 
 }
