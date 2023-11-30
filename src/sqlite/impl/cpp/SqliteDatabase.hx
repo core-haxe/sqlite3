@@ -97,6 +97,9 @@ class SqliteDatabase extends DatabaseBase {
 
     private function prepareStatement(sql:String, param:Dynamic = null):NativeStatement {
         var stmt = _nativeDB.prepare(sql);
+        if (sql.indexOf("?") == -1) {
+            return stmt;
+        }
 
         var params = [];
         if (param != null) {
