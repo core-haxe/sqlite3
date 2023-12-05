@@ -24,6 +24,7 @@ class SqliteDatabase extends DatabaseBase {
                 }
                 var stmt = prepareStatement(sql);
                 stmt.executeStatement();
+                stmt.close();
                 resolve(new SqliteResult(this, true));
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
@@ -41,11 +42,14 @@ class SqliteDatabase extends DatabaseBase {
                 var stmt = prepareStatement(sql, param);
                 var rs = stmt.executeQuery();
                 if (!rs.hasNext()) {
+                    stmt.close();
                     resolve(new SqliteResult(this, null));
                     return;
                 }
 
-                resolve(new SqliteResult(this, rs.next()));
+                var result = rs.next();
+                stmt.close();
+                resolve(new SqliteResult(this, result));
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }
@@ -65,6 +69,7 @@ class SqliteDatabase extends DatabaseBase {
                 while (rs.hasNext()) {
                     records.push(rs.next());
                 }
+                stmt.close();
                 resolve(new SqliteResult(this, records));
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
@@ -81,6 +86,7 @@ class SqliteDatabase extends DatabaseBase {
                 }
                 var stmt = prepareStatement(sql, param);
                 stmt.executeStatement();
+                stmt.close();
                 if (sql.indexOf("INSERT ") != -1) {
                     var lastInsertedId = _nativeDB.lastInsertRowId();
                     resolve(new SqliteResult(this, {
