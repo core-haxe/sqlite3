@@ -46,7 +46,17 @@ class SqliteDatabase extends DatabaseBase {
                     reject(new SqliteError(error.name, error.message));
                     return;
                 }
-                resolve(new SqliteResult(this, true));
+                var thisData = Syntax.code("this");
+                var result = new SqliteResult(this, true);
+                if (thisData != null) {
+                    if (thisData.lastID != null) {
+                        result.lastID = thisData.lastID;
+                    }
+                    if (thisData.changes != null) {
+                        result.changes = thisData.changes;
+                    }
+                }
+                resolve(result);
             });
         });
     }
@@ -63,9 +73,19 @@ class SqliteDatabase extends DatabaseBase {
                     reject(new SqliteError(error.name, error.message));
                     return;
                 }
+                var thisData = Syntax.code("this");
                 // we want to convert any js.node.Buffer's into haxe.io.Bytes
                 convertNativeBuffersToBytes(row);
-                resolve(new SqliteResult(this, row));
+                var result = new SqliteResult(this, row);
+                if (thisData != null) {
+                    if (thisData.lastID != null) {
+                        result.lastID = thisData.lastID;
+                    }
+                    if (thisData.changes != null) {
+                        result.changes = thisData.changes;
+                    }
+                }
+                resolve(result);
             });
         });
     }
@@ -78,12 +98,23 @@ class SqliteDatabase extends DatabaseBase {
                 param = convertParamsBytesToBuffers(param);
             }
             _nativeDB.run(sql, param, (error) -> {
-                var insertData = Syntax.code("this");
                 if (error != null) {
                     reject(new SqliteError(error.name, error.message));
                     return;
                 }
-                resolve(new SqliteResult(this, insertData));
+
+                var thisData = Syntax.code("this");
+                var result = new SqliteResult(this, thisData);
+                if (thisData != null) {
+                    if (thisData.lastID != null) {
+                        result.lastID = thisData.lastID;
+                    }
+                    if (thisData.changes != null) {
+                        result.changes = thisData.changes;
+                    }
+                }
+
+                resolve(result);
             });
         });
     }

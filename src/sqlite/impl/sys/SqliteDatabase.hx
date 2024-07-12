@@ -19,8 +19,13 @@ class SqliteDatabase extends DatabaseBase {
         return new Promise((resolve, reject) -> {
             try {
                 sql = prepareSQL(sql);
-                _connection.request(sql);
-                resolve(new SqliteResult(this, true));
+                var rs = _connection.request(sql);
+                var result = new SqliteResult(this, true);
+                if (rs != null) {
+                    result.lastID = _connection.lastInsertId();
+                    result.changes = rs.length;
+                }
+                resolve(result);
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }
@@ -63,15 +68,20 @@ class SqliteDatabase extends DatabaseBase {
         return new Promise((resolve, reject) -> {
             try {
                 sql = prepareSQL(sql, param);
-                _connection.request(sql);
+                var rs = _connection.request(sql);
+                var data = null;
                 if (sql.indexOf("INSERT ") != -1) {
                     var lastInsertedId = _connection.lastInsertId();
-                    resolve(new SqliteResult(this, {
+                    data = {
                         lastID: lastInsertedId
-                    }));
-                } else {
-                    resolve(new SqliteResult(this, null));
+                    }
                 }
+                var result = new SqliteResult(this, data);
+                if (rs != null) {
+                    result.lastID = _connection.lastInsertId();
+                    result.changes = rs.length;
+                }
+                resolve(result);
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }

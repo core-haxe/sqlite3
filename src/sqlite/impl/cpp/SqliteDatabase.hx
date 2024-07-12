@@ -25,7 +25,10 @@ class SqliteDatabase extends DatabaseBase {
                 var stmt = prepareStatement(sql);
                 stmt.executeStatement();
                 stmt.close();
-                resolve(new SqliteResult(this, true));
+                var result = new SqliteResult(this, true);
+                result.lastID = _nativeDB.lastInsertRowId();
+                result.changes = _nativeDB.changes();
+                resolve(result);
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }
@@ -49,7 +52,10 @@ class SqliteDatabase extends DatabaseBase {
 
                 var result = rs.next();
                 stmt.close();
-                resolve(new SqliteResult(this, result));
+                var result = new SqliteResult(this, result);
+                result.lastID = _nativeDB.lastInsertRowId();
+                result.changes = _nativeDB.changes();
+                resolve(result);
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }
@@ -70,7 +76,10 @@ class SqliteDatabase extends DatabaseBase {
                     records.push(rs.next());
                 }
                 stmt.close();
-                resolve(new SqliteResult(this, records));
+                var result = new SqliteResult(this, records);
+                result.lastID = _nativeDB.lastInsertRowId();
+                result.changes = _nativeDB.changes();
+                resolve(result);
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }
@@ -87,14 +96,17 @@ class SqliteDatabase extends DatabaseBase {
                 var stmt = prepareStatement(sql, param);
                 stmt.executeStatement();
                 stmt.close();
+                var data = null;
                 if (sql.indexOf("INSERT ") != -1) {
                     var lastInsertedId = _nativeDB.lastInsertRowId();
-                    resolve(new SqliteResult(this, {
+                    data = {
                         lastID: lastInsertedId
-                    }));
-                } else {
-                    resolve(new SqliteResult(this, null));
+                    }
                 }
+                var result = new SqliteResult(this, data);
+                result.lastID = _nativeDB.lastInsertRowId();
+                result.changes = _nativeDB.changes();
+                resolve(result);
             } catch (e:Dynamic) {
                 reject(new SqliteError("Error", "SQLITE_ERROR: " + e));
             }
