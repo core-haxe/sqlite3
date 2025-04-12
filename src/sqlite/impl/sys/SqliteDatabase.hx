@@ -101,7 +101,7 @@ class SqliteDatabase extends DatabaseBase {
 
         var r = ~/\?/gm;
         sql = r.map(sql, f -> {
-            var p = params.shift();
+            var p:Dynamic = params.shift();
             var v:Any = switch (Type.typeof(p)) {
                 case TClass(String):
                     _connection.quote(p);
